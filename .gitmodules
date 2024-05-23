@@ -1,0 +1,3 @@
+[submodule "step1_nuclei_segmentation/CellViT"]
+	path = step1_nuclei_segmentation/CellViT
+	url = https://github.com/TIO-IKIM/CellViT.git
