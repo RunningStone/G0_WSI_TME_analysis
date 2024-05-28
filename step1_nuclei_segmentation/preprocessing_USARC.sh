@@ -15,15 +15,12 @@
 # Set the name of the job.
 #$ -N USARC_preprocessing
 
-#$ -m be
-
-#$ -M jianan.c@ucl.ac.uk
 
 # 8. Run the application.
-source /share/apps/source_files/python/python-3.9.5.source
+module load python3/3.9-gnu-10.2.0
+module load openjpeg/2.4.0/gnu-4.9.2
+module load openslide/3.4.1/gnu-4.9.2
 
-source /home/jianchen/cellvit/bin/activate
+source ~/cellvit/bin/activate
 
-export LD_LIBRARY_PATH=/share/apps/openslide-3.4.1/lib:$LD_LIBRARY_PATH
-
-python3 /home/jianchen/CellViT/preprocessing/patch_extraction/main_extraction.py --config /home/jianchen/CellViT/example/preprocessing_example.yaml
+python3 ~/CellViT/preprocessing/patch_extraction/main_extraction.py --config ~/CellViT/example/preprocessing_example.yaml
