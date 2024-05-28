@@ -1,0 +1,31 @@
+module -f unload compilers mpi gcc-libs
+module load beta-modules
+module load gcc-libs/10.2.0
+module load python3/3.9-gnu-10.2.0
+
+python3.9 -m venv cellvit
+
+source ~/cellvit/bin/activate
+
+module load openjpeg/2.4.0/gnu-4.9.2
+module load openslide/3.4.1/gnu-4.9.2
+
+git clone https://github.com/TIO-IKIM/CellViT.git
+
+cd CellViT
+pip install -r requirements.txt
+pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
+pip install cucim
+pip install cupy-cuda12x
+pip install openslide-python
+pip install shapely
+pip install opencv-python
+pip install geojson
+pip install rasterio
+pip install histolab
+
+pip uninstall opencv-python
+pip uninstall opencv-contrib-python
+pip uninstall opencv-contrib-python-headless
+pip install opencv-python==4.6.0.66
+pip install opencv-contrib-python==4.5.5.62
