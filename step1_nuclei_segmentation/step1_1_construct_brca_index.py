@@ -3,7 +3,8 @@ import pandas as pd
 from pathlib import Path
 # 定义文件路径
 base_dir = "/home/ucbtsp5/Scratch/data/BRCA/TCGA-BRCA"
-output_csv = "/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/G0_WSI_TME_analysis/step1_nuclei_segmentation/data/BRCA_files_index.csv"
+output_csv_dir = "/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/DATA/"
+out_csv_name = "BRCA_files_index" # csv
 cellvit_nuclei_dir = "/home/ucbtsp5/Scratch/data/BRCA/CellViT_Nuclei/"
 yaml_template_path = '/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/G0_WSI_TME_analysis/step1_nuclei_segmentation/CellViT/example/preprocessing_example.yaml'
 
@@ -14,7 +15,7 @@ import yaml
 
 # 定义文件夹路径
 base_dir = Path(base_dir)
-output_csv_path = Path(output_csv)
+#output_csv_path = Path(output_csv)
 cellvit_base_dir = Path(cellvit_nuclei_dir)
 yaml_template_path = Path(yaml_template_path)
 
@@ -62,4 +63,16 @@ for folder in base_dir.iterdir():
 
 # 创建DataFrame并保存为CSV文件
 df = pd.DataFrame(data)
+output_csv_path = f'{output_csv_dir}/{out_csv_name}_all.csv'
 df.to_csv(output_csv_path, index=False)
+# 分批次保存每400个项目为一个文件
+batch_size = 500
+num_batches = (len(df) // batch_size) + 1
+
+for i in range(num_batches):
+    start_idx = i * batch_size
+    end_idx = start_idx + batch_size
+    batch_df = df[start_idx:end_idx]
+    
+    output_csv_path = f'{output_csv_dir}/{out_csv_name}_{i+1}.csv'
+    batch_df.to_csv(output_csv_path, index=False)

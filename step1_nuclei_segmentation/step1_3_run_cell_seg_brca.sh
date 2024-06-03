@@ -3,25 +3,28 @@
 # Batch script to run a serial array job under SGE.
 
 # Request ten minutes of wallclock time (format hours:minutes:seconds).
-#$ -l h_rt=01:59:59
+#$ -l h_rt=12:59:59
 
 # Request 1 gigabyte of RAM for each core/thread 
 # (must be an integer followed by M, G, or T)
 #$ -l mem=32G
 
 # Request GPU
-#$ -l gpu=False
+#$ -l gpu=1
+
+# Request shared memory parallel
+#$ -pe smp 8
 
 # Set up the job array.  In this instance we have requested 10000 tasks
 # numbered 2 to 1012. line 1 is name of columns
 #$ -t 2-501
 
 # Set the name of the job.
-#$ -N CellViT_BRCA
+#$ -N BRCA_seg
 
 # Set the working directory to somewhere in your scratch space. 
 # Replace "<your_UCL_id>" with your UCL user ID :)
-#$ -wd /home/ucbtsp5/Scratch/24Exp01_CellViT_seg/OUTPUT/cellvit_step1_2/part1/
+#$ -wd /home/ucbtsp5/Scratch/24Exp01_CellViT_seg/OUTPUT/cellvit_step1_3/
 
 # Run the application.
 
@@ -58,31 +61,37 @@ conda activate cellvit_env
 
 # 定义CSV文件路径
 CSV_FILE="/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/DATA/BRCA_files_index_1.csv"
+# 提取对应行号的文件路径
+WSI_FILE_PATH=$(awk -F',' -v row="$SGE_TASK_ID" 'NR == row {print $3}' "$CSV_FILE")
+PATCH_FILE_PATH=$(awk -F',' -v row="$SGE_TASK_ID" 'NR == row {print $6}' "$CSV_FILE")
 
-# 提取对应行号的第四列内容
-PROCESSING_STARTED=$(awk -F',' -v row="$SGE_TASK_ID" 'NR == row {print $4}' "$CSV_FILE")
-
-# 判断第四列内容是否为True
-if [ "$PROCESSING_STARTED" == "True" ]; then
-    echo "Processing has already started. Exiting."
-    exit 0
-fi
-
-
-# 提取对应行号的yaml文件路径
-YAML_FILE_PATH=$(awk -F',' -v row="$SGE_TASK_ID" 'NR == row {print $7}' "$CSV_FILE")
 
 # 检查是否成功提取到yaml文件路径
-if [ -z "$YAML_FILE_PATH" ]; then
-  echo "Error: Could not find yaml file path for SGE_TASK_ID $SGE_TASK_ID"
+if [ -z "$WSI_FILE_PATH" ]; then
+  echo "Error: Could not find wsi file path for SGE_TASK_ID $SGE_TASK_ID"
   exit 1
 fi
 
-echo "Using config file: $YAML_FILE_PATH"
+# 检查是否成功提取到yaml文件路径
+if [ -z "$PATCH_FILE_PATH" ]; then
+  echo "Error: Could not find patch file path for SGE_TASK_ID $SGE_TASK_ID"
+  exit 1
+fi
+
+echo "Using wsi file: $WSI_FILE_PATH"
+echo "Using patch file: $PATCH_FILE_PATH"
 # 更新CSV文件，将processing_started列设置为True
 #awk -F',' -v row="$SGE_TASK_ID" 'BEGIN{OFS=","} NR == row {$4="True"} 1' "$CSV_FILE" > temp && mv temp "$CSV_FILE"
 
 
 cd /home/ucbtsp5/Scratch/24Exp01_CellViT_seg/G0_WSI_TME_analysis/step1_nuclei_segmentation/
 
-python3 ./CellViT/preprocessing/patch_extraction/main_extraction.py --config "$YAML_FILE_PATH"
+python3 ./CellViT/cell_segmentation/inference/cell_detection.py \
+  --model /home/ucbtsp5/Scratch/24Exp01_CellViT_seg/PRETRAINED/cellvit/CellViT-256-x40.pth\
+  --gpu 0 \
+  --geojson \
+  --outdir_subdir 40x256 \
+  process_wsi \
+  --wsi_path "$WSI_FILE_PATH" \
+  --patched_slide_path "$PATCH_FILE_PATH"
+

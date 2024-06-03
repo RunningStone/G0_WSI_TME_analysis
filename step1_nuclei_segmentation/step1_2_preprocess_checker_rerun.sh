@@ -3,7 +3,7 @@
 # Batch script to run a serial array job under SGE.
 
 # Request ten minutes of wallclock time (format hours:minutes:seconds).
-#$ -l h_rt=01:59:59
+#$ -l h_rt=03:59:59
 
 # Request 1 gigabyte of RAM for each core/thread 
 # (must be an integer followed by M, G, or T)
@@ -14,7 +14,7 @@
 
 # Set up the job array.  In this instance we have requested 10000 tasks
 # numbered 2 to 1012. line 1 is name of columns
-#$ -t 2-501
+#$ -t 2-72
 
 # Set the name of the job.
 #$ -N CellViT_BRCA
@@ -57,17 +57,7 @@ conda activate cellvit_env
 
 
 # 定义CSV文件路径
-CSV_FILE="/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/DATA/BRCA_files_index_1.csv"
-
-# 提取对应行号的第四列内容
-PROCESSING_STARTED=$(awk -F',' -v row="$SGE_TASK_ID" 'NR == row {print $4}' "$CSV_FILE")
-
-# 判断第四列内容是否为True
-if [ "$PROCESSING_STARTED" == "True" ]; then
-    echo "Processing has already started. Exiting."
-    exit 0
-fi
-
+CSV_FILE="/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/DATA/need_rerun.csv"
 
 # 提取对应行号的yaml文件路径
 YAML_FILE_PATH=$(awk -F',' -v row="$SGE_TASK_ID" 'NR == row {print $7}' "$CSV_FILE")
