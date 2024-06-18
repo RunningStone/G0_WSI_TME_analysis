@@ -15,6 +15,9 @@
 # Request shared memory parallel
 #$ -pe smp 8
 
+# Request temp space
+#$ -l tmpfs=15G 
+
 # Set up the job array.  In this instance we have requested 10000 tasks
 # numbered 2 to 1012. line 1 is name of columns
 #$ -t 2-501

@@ -12,6 +12,9 @@
 # Request GPU
 #$ -l gpu=False
 
+# Request temp space
+#$ -l tmpfs=15G 
+
 # Set up the job array.  In this instance we have requested 10000 tasks
 # numbered 2 to 1012. line 1 is name of columns
 #$ -t 2-68
@@ -22,6 +25,8 @@
 # Set the working directory to somewhere in your scratch space. 
 # Replace "<your_UCL_id>" with your UCL user ID :)
 #$ -wd /home/ucbtsp5/Scratch/24Exp01_CellViT_seg/OUTPUT/cellvit_step1_2/part1/
+
+
 
 # Run the application.
 
@@ -57,7 +62,7 @@ conda activate cellvit_env
 
 
 # 定义CSV文件路径
-CSV_FILE="/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/DATA/need_rerun_index_2.csv"
+CSV_FILE="/home/ucbtsp5/Scratch/24Exp01_CellViT_seg/DATA/need_rerun_index_1.csv"
 
 # 提取对应行号的yaml文件路径
 YAML_FILE_PATH=$(awk -F',' -v row="$SGE_TASK_ID" 'NR == row {print $7}' "$CSV_FILE")
