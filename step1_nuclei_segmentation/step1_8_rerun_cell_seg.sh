@@ -7,7 +7,7 @@
 
 # Request 1 gigabyte of RAM for each core/thread 
 # (must be an integer followed by M, G, or T)
-#$ -l mem=5G
+#$ -l mem=16G
 
 # Request GPU
 #$ -l gpu=1
@@ -15,12 +15,15 @@
 # Request shared memory parallel
 #$ -pe smp 8
 
+# Request temp space
+#$ -l tmpfs=15G 
+
 # Set up the job array.  In this instance we have requested 10000 tasks
 # numbered 2 to 1012. line 1 is name of columns
-#$ -t 2-310
+#$ -t 2-105
 
 # Set the name of the job.
-#$ -N BRCA_seg
+#$ -N seg_rerun
 
 # Set the working directory to somewhere in your scratch space. 
 # Replace "<your_UCL_id>" with your UCL user ID :)

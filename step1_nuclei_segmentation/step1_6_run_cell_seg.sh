@@ -7,7 +7,7 @@
 
 # Request 1 gigabyte of RAM for each core/thread 
 # (must be an integer followed by M, G, or T)
-#$ -l mem=5G
+#$ -l mem=16G
 
 # Request GPU
 #$ -l gpu=1
