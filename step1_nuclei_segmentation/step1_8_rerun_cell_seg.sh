@@ -16,11 +16,11 @@
 #$ -pe smp 8
 
 # Request temp space
-#$ -l tmpfs=15G 
+#$ -l tmpfs=30G 
 
 # Set up the job array.  In this instance we have requested 10000 tasks
 # numbered 2 to 1012. line 1 is name of columns
-#$ -t 2-105
+#$ -t 2-39
 
 # Set the name of the job.
 #$ -N seg_rerun
